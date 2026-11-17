@@ -7,6 +7,14 @@ class CatalogHandler(BaseHTTPRequestHandler):
         if self.path == "/health":
             status = 200
             body = {"status": "ok", "version": "v1"}
+        elif self.path == "/products/42":
+            status = 200
+            body = {
+                "id": 42,
+                "name": "Demo mechanical keyboard",
+                "available": True,
+                "version": "v1",
+            }
         else:
             status = 404
             body = {"error": "Endpoint not found"}
