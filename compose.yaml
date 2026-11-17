@@ -1,0 +1,20 @@
+services:
+  stable:
+    image: catalog-api:dev
+    build:
+      context: ./app
+    environment:
+      RELEASE_VERSION: "v1"
+      PRODUCT_LOOKUP_FAILS: "false"
+    ports:
+      - "127.0.0.1:8080:8000"
+
+  candidate:
+    image: catalog-api:dev
+    build:
+      context: ./app
+    environment:
+      RELEASE_VERSION: "v2"
+      PRODUCT_LOOKUP_FAILS: "true"
+    ports:
+      - "127.0.0.1:8081:8000"
