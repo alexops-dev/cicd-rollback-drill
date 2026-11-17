@@ -1,23 +1,35 @@
 import json
+import os
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
+
+RELEASE_VERSION = os.getenv("RELEASE_VERSION", "v1")
+PRODUCT_LOOKUP_FAILS = os.getenv("PRODUCT_LOOKUP_FAILS", "false") == "true"
+PORT = int(os.getenv("PORT", "8000"))
 
 class CatalogHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/health":
             status = 200
-            body = {"status": "ok", "version": "v1"}
+            body = {"status": "ok", "version": RELEASE_VERSION}
         elif self.path == "/products/42":
-            status = 200
-            body = {
-                "id": 42,
-                "name": "Demo mechanical keyboard",
-                "available": True,
-                "version": "v1",
-            }
+            if PRODUCT_LOOKUP_FAILS:
+                status = 500
+                body = {
+                    "error": "Product lookup unavailable",
+                    "version": RELEASE_VERSION,
+                }
+            else:
+                status = 200
+                body = {
+                    "id": 42,
+                    "name": "Demo mechanical keyboard",
+                    "available": True,
+                    "version": RELEASE_VERSION,
+                }
         else:
             status = 404
-            body = {"error": "Endpoint not found"}
+            body = {"error": "Endpoint not found", "version": RELEASE_VERSION}
 
         response = json.dumps(body).encode("utf-8")
 
@@ -29,8 +41,11 @@ class CatalogHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    server = ThreadingHTTPServer(("127.0.0.1", 8000), CatalogHandler)
-    print("Catalog API running at http://127.0.0.1:8000", flush=True)
+    server = ThreadingHTTPServer(("127.0.0.1", PORT), CatalogHandler)
+    print(
+        f"Catalog API {RELEASE_VERSION} running at http://127.0.0.1:{PORT}",
+        flush=True,
+    )
 
     try:
         server.serve_forever()
