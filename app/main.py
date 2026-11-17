@@ -6,6 +6,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 RELEASE_VERSION = os.getenv("RELEASE_VERSION", "v1")
 PRODUCT_LOOKUP_FAILS = os.getenv("PRODUCT_LOOKUP_FAILS", "false") == "true"
 PORT = int(os.getenv("PORT", "8000"))
+HOST = os.getenv("HOST", "127.0.0.1")
 
 class CatalogHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -41,9 +42,9 @@ class CatalogHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    server = ThreadingHTTPServer(("127.0.0.1", PORT), CatalogHandler)
+    server = ThreadingHTTPServer((HOST, PORT), CatalogHandler)
     print(
-        f"Catalog API {RELEASE_VERSION} running at http://127.0.0.1:{PORT}",
+        f"Catalog API {RELEASE_VERSION} listening on {HOST}:{PORT}",
         flush=True,
     )
 
