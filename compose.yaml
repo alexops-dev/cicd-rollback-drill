@@ -18,3 +18,13 @@ services:
       PRODUCT_LOOKUP_FAILS: "true"
     ports:
       - "127.0.0.1:8081:8000"
+
+  proxy:
+    image: nginx:stable-alpine
+    ports:
+      - "127.0.0.1:8090:80"
+    volumes:
+      - ./proxy:/etc/nginx/conf.d:ro
+    depends_on:
+      - stable
+      - candidate
